@@ -12,9 +12,3 @@ const connectDb = (url) => {
 };
 
 module.exports = connectDb;
-
-
-// mongoose.connect('mongodb://localhost/mydatabase', {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-// })  deprecated

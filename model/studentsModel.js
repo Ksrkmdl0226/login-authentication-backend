@@ -6,7 +6,7 @@ const studentSchema = new mongoose.Schema(
       type: String,
       requied: [true, "Student name must be filled."],
       trim: true,
-      unique: [true, "Student name already exist."],
+      unique: false,
     },
     subject: {
       type: String,

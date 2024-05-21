@@ -3,16 +3,15 @@ const StudentData = require("../model/studentsModel");
 const studentController = {
   getStudentsList: async (req, res) => {
     try {
-      // res.json({msg : "get all"})
       let data = await StudentData.find({});
-      res.status(200).json({ length: data.length, data});
+      res.status(200).json({ length: data.length, data });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
   },
   getStudentDetails: async (req, res) => {
     try {
-      let data = await StudentData.findById({ _id: req.params.id});
+      let data = await StudentData.findById({ _id: req.params.id });
       res.status(200).json({ data });
     } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -21,16 +20,35 @@ const studentController = {
   addStudent: async (req, res) => {
     try {
       const { name, subject, marks } = req.body;
-      // res.json({msg : req.body})
-      let extStudent = await StudentData.findOne({ name });
-      if (extStudent)
+      let extStudent = await StudentData.find({
+        name: name,
+        subject: subject,
+      });
+      let randomMarks = () => {
+        return Math.floor(Math.random() * 90 + 10);
+      };
+      if (extStudent.length > 0) {
+        console.log("random", randomMarks());
+        let updatedData = extStudent?.map(async (val, index) => {
+          console.log("item", val?._id);
+          let updatedData = await StudentData.findByIdAndUpdate(
+            { _id: val?._id.toString() },
+            { marks: randomMarks() }
+          );
+        });
+        if (updatedData) {
+          let data = await StudentData.create({ name, subject, marks });
+          return res.status(200).json({
+            message: "Student Existing Details Updated, New Details Added.", data
+          });
+        }
+      } else {
+        let data = await StudentData.create({ name, subject, marks });
+        console.log("data", data);
         return res
-          .status(400)
-          .json({ message: "Student Details Already Exists." });
-      let data = await StudentData.create({ name, subject, marks });
-      res
-        .status(200)
-        .json({ message: "Students Details Added successfully", data });
+          .status(200)
+          .json({ message: "Students Details Added successfully", data });
+      }
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
