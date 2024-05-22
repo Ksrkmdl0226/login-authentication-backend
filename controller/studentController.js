@@ -19,31 +19,19 @@ const studentController = {
   },
   addStudent: async (req, res) => {
     try {
-      const { name, subject, marks } = req.body;
-      let extStudent = await StudentData.find({
+      const { name, subject, dateOfBirth, marks } = req.body;
+      let extStudent = await StudentData.findOne({
         name: name,
         subject: subject,
       });
-      let randomMarks = () => {
-        return Math.floor(Math.random() * 90 + 10);
-      };
-      if (extStudent.length > 0) {
-        console.log("random", randomMarks());
-        let updatedData = extStudent?.map(async (val, index) => {
-          console.log("item", val?._id);
-          let updatedData = await StudentData.findByIdAndUpdate(
-            { _id: val?._id.toString() },
-            { marks: randomMarks() }
-          );
+      console.log(extStudent);
+      if (!extStudent) {
+        let data = await StudentData.create({
+          name,
+          subject,
+          dateOfBirth,
+          marks,
         });
-        if (updatedData) {
-          let data = await StudentData.create({ name, subject, marks });
-          return res.status(200).json({
-            message: "Student Existing Details Updated, New Details Added.", data
-          });
-        }
-      } else {
-        let data = await StudentData.create({ name, subject, marks });
         console.log("data", data);
         return res
           .status(200)
@@ -55,15 +43,23 @@ const studentController = {
   },
   updateStudent: async (req, res) => {
     try {
-      const { name, subject, marks } = req.body;
+      const { name, subject, dateOfBirth, marks } = req.body;
       let extStudent = await StudentData.findById({ _id: req.params.id });
       if (!extStudent)
         return res.status(400).json({ message: "Student Doesn't exists" });
       let data = await StudentData.findByIdAndUpdate(
         { _id: req.params.id },
-        { name, subject, marks }
+        {
+          name,
+          subject,
+          dateOfBirth,
+          marks,
+        }
       );
-      return res.status(200).json({ message: "Updated Successfully.", data });
+      let newData = await StudentData.findOne({ _id: extStudent?._id });
+      return res
+        .status(200)
+        .json({ message: "Updated Successfully.", data: newData });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -82,3 +78,28 @@ const studentController = {
 };
 
 module.exports = studentController;
+
+// let randomMarks = () => {
+//   return Math.floor(Math.random() * 90 + 10);
+// };
+// if (extStudent) {
+//   let updatedData = await StudentData.findByIdAndUpdate(
+//     { _id: extStudent?._id.toString() },
+//     { marks: parseInt(extStudent?.marks) + parseInt(marks) }
+//   );
+// console.log("random", randomMarks());
+// let updatedData = extStudent?.map(async (val, index) => {
+//   console.log("item", val?._id);
+// });
+// return res.status(200).json({
+//   message: "Student Existing Details Updated, New Details Added.",
+//   updatedData,
+// });
+// if (updatedData) {
+//   let data = await StudentData.create({ name, subject, marks });
+//   return res.status(200).json({
+//     message: "Student Existing Details Updated, New Details Added.", data
+//   });
+// }
+// } else {
+// }

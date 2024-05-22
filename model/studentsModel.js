@@ -13,6 +13,11 @@ const studentSchema = new mongoose.Schema(
       requied: [true, "subject name must be filled."],
       trim: true,
     },
+    dateOfBirth : {
+      type : String,
+      requied: [true, "Date of Birth must be filled."],
+      trim: true,
+    },
     marks: {
       type: String,
       requied: [true, "marks must be filled."],
